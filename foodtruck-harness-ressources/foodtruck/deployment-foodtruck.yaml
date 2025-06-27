@@ -1,0 +1,70 @@
+{{- if .Values.dockercfg}}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{.Values.name}}-dockercfg
+  annotations:
+    harness.io/skip-versioning: "true"
+data:
+  .dockercfg: {{.Values.dockercfg}}
+type: kubernetes.io/dockercfg
+---
+{{- end}}
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+spec:
+  selector:
+    matchLabels:
+      app: web
+  template:
+    metadata:
+      labels:
+        app: web
+        app.kubernetes.io/version: {{.Values.version}}
+    spec:  
+      containers:
+      - args: ["sh", "-c", 'export OTEL_SERVICE_NAME="$NAMESPACE_NAME-$OTEL_SERVICE_NAME" && python3 app.py']
+        env:
+        - name: NAMESPACE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: OTEL_EXPORTER_OTLP_ENDPOINT
+          value: http://grafana-k8s-monitoring-alloy-receiver.default.svc.cluster.local:4317
+        - name: OTEL_SERVICE_NAME
+          value: "$(NAMESPACE_NAME)-FoodTruck"
+        - name: OTEL_RESOURCE_ATTRIBUTES
+          value: "deployment.environment=dev"
+        image: {{.Values.image}}
+        imagePullPolicy: Always
+        name: foodtruck
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+        ports:
+        - containerPort: 5000
+      restartPolicy: Always
+      imagePullSecrets:
+      - name: {{.Values.name}}-dockercfg
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web
+spec:
+  ports:
+  - name: web
+    port: 5000
+    targetPort: 5000
+  selector:
+    app: web
+  type: LoadBalancer
