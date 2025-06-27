@@ -6,6 +6,3 @@ To successful finish the lab the following prerequisites need to be met:
 -	AWS Access Key ID, AWS Secret Access Key to access Kubernetes cluster, provided by the trainer
 
 www.swiss-digital-network.ch
-
-https://digital-innovation-partner.ch/
-
