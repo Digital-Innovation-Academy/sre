@@ -33,7 +33,7 @@ spec:
             fieldRef:
               fieldPath: metadata.namespace
         - name: OTEL_EXPORTER_OTLP_ENDPOINT
-          value: http://grafana-k8s-monitoring-alloy-receiver.default.svc.cluster.local:4317
+          value: http://grafana-k8s-monitoring-alloy-receiver.grafana-cloud.svc.cluster.local:4317
         - name: OTEL_SERVICE_NAME
           value: "$(NAMESPACE_NAME)-FoodTruck"
         - name: OTEL_RESOURCE_ATTRIBUTES
