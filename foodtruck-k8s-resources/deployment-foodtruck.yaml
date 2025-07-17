@@ -12,14 +12,20 @@ spec:
         app: web
     spec:
       containers:
-      - args: ["sh", "-c", 'export SERVICE_NAME="${NAMESPACE_NAME}-FoodTruck" && export OTEL_RESOURCE_ATTRIBUTES="service.name=$SERVICE_NAME,deployment.environment=dev" && python3 app.py']
+      - args:
+        - sh
+        - -c
+        - python3 app.py
         env:
         - name: NAMESPACE_NAME
           valueFrom:
             fieldRef:
+              apiVersion: v1
               fieldPath: metadata.namespace
         - name: OTEL_EXPORTER_OTLP_ENDPOINT
           value: http://grafana-k8s-monitoring-alloy-receiver.grafana-cloud.svc.cluster.local:4317
+        - name: OTEL_RESOURCE_ATTRIBUTES
+          value: deployment.environment=dev
         image: soniabou/sre-foodtruck:1.0.0
         imagePullPolicy: Always
         name: foodtruck
