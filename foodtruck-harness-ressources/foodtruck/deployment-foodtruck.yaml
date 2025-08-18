@@ -26,14 +26,33 @@ spec:
         app.kubernetes.io/version: {{.Values.version}}
     spec:  
       containers:
-      - args: ["sh", "-c", 'export SERVICE_NAME="${NAMESPACE_NAME}-FoodTruck" && export OTEL_RESOURCE_ATTRIBUTES="service.name=$SERVICE_NAME,deployment.environment=dev" && python3 app.py']
+      - args: ["sh", "-c", "python3 app.py"]
         env:
         - name: NAMESPACE_NAME
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
         - name: OTEL_EXPORTER_OTLP_ENDPOINT
-          value: http://grafana-k8s-monitoring-alloy-receiver.grafana-cloud.svc.cluster.local:4317
+          value: http://grafana-k8s-monitoring-alloy-receiver.grafana-cloud.svc.cluster.local:4318
+        - name: OTEL_PYTHON_LOG_CORRELATION
+          value: "true"
+        - name: OTEL_LOGS_EXPORTER
+          value: otlp
+        - name: OTEL_METRICS_EXPORTER
+          value: otlp
+        - name: OTEL_TRACES_EXPORTER
+          value: otlp
+        - name: OTEL_LOG_LEVEL
+          value: debug
+        - name: OTEL_RESOURCE_ATTRIBUTES
+          value: deployment.environment=dev
+        - name: OTEL_SERVICE_INSTANCE_ID
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.name
+        - name: OTEL_SERVICE_NAME
+          value: web
         image: {{.Values.image}}
         imagePullPolicy: Always
         name: foodtruck
