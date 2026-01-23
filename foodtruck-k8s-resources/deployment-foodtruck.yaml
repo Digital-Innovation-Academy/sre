@@ -11,6 +11,17 @@ spec:
       labels:
         app: web
     spec:
+      initContainers:
+      - name: wait-for-es
+        image: busybox:1.28
+        command: ['sh', '-c', "until nslookup es; do echo waiting for es; sleep 2; done"]
+        resources:
+          requests:
+            memory: "30Mi"
+            cpu: "20m"
+          limits:
+            memory: "50Mi"
+            cpu: "50m"
       containers:
       - args:
         - sh
@@ -46,6 +57,12 @@ spec:
         image: digitalinnovationacademy/sre-foodtruck:1.0.0
         imagePullPolicy: Always
         name: foodtruck
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 5000
+          initialDelaySeconds: 30
+          periodSeconds: 10
         resources:
           requests:
             memory: "128Mi"
@@ -70,3 +87,4 @@ spec:
     targetPort: 5000
   selector:
     app: web
+ 
