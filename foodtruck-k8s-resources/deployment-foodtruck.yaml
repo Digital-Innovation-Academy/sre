@@ -43,7 +43,7 @@ spec:
               fieldPath: metadata.name
         - name: OTEL_SERVICE_NAME
           value: web
-        image: soniabou/sre-foodtruck:1.0.0
+        image: digitalinnovationacademy/sre-foodtruck:1.0.0
         imagePullPolicy: Always
         name: foodtruck
         resources:
