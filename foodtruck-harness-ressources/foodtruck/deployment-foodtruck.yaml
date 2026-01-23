@@ -25,6 +25,20 @@ spec:
         app: web
         app.kubernetes.io/version: {{.Values.version}}
     spec:  
+      initContainers:
+      - name: wait-for-es
+        image: busybox:1.28
+        command:
+          - sh
+          - -c
+          - until nslookup es; do echo waiting for es; sleep 2; done
+        resources:
+          requests:
+            memory: "30Mi"
+            cpu: "20m"
+          limits:
+            memory: "50Mi"
+            cpu: "50m"
       containers:
       - args: ["sh", "-c", "python3 app.py"]
         env:

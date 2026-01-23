@@ -20,10 +20,27 @@ data:
             for item_id in item:
                 self.client.get(f"/search?q={item_id}", name="Search")
                 time.sleep(1)
-
-    #    def on_start(self):
-    #        self.client.post("/login", json={"username":"foo", "password":"bar"})
-
+        @task(3)
+        def filter(self):
+            cuisine = random.choice([
+                "tacos",
+                "burgers",
+                "mediterranean",
+                "sandwiches"
+            ])
+            self.client.get(f"/filter?cuisine={cuisine}&format=json", name="filter")
+        @task(2)
+        def menu(self):
+            self.client.get("/menu?format=json", name="menu")
+        
+        @task(2)
+        def random_truck(self):
+            self.client.get("/random?format=json", name="random")
+        @task(1)
+        def stats(self):
+            self.client.get("/stats?format=json", name="stats")
+   #    def on_start(self):
+   #        self.client.post("/login", json={"username":"foo", "password":"bar"})
 ---
 apiVersion: apps/v1
 kind: Deployment
