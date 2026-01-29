@@ -5,6 +5,7 @@ metadata:
 data:
   locust: |
     import time
+    import random
     from locust import HttpUser, task, between
 
     class QuickstartUser(HttpUser):
